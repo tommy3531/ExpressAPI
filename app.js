@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const publicRoutes = require('./routes/public');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
@@ -16,7 +18,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes);
-
 app.use('/feed', feedRoutes);
+app.use('/public', publicRoutes);
+app.use('/user', userRoutes);
 
 app.listen(8080);

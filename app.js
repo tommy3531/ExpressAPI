@@ -7,9 +7,10 @@ const dotenv = require('dotenv');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const flash = require('express-flash');
+const cors = require('cors');
 
 const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 const publicRoutes = require('./routes/public');
 
 /**
@@ -22,12 +23,7 @@ const app = express();
  */
 dotenv.config({ path: '.env'});
 
-/**
- * Routes
- */
-app.use('/auth', authRoutes);
-app.use('/feed', feedRoutes);
-app.use('/public', publicRoutes);
+
 /**
  * Connect to MongoDB
  */
@@ -60,19 +56,29 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(cors());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST', 'PUT', 'PATCH', 'DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', '*');
     next();
 });
 
 app.use((error, req, res, next) => {
     
-    console.log(error);
+    console.log("THis is and error: " + error);
+    console.log("This is the res: " + res);
+    console.log("This is the req: " +req);
     
 });
+
+/**
+ * Routes
+ */
+app.use('/user', userRoutes);
+app.use('/feed', feedRoutes);
+app.use('/public', publicRoutes);
 
 app.listen(8080);
 

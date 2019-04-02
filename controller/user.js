@@ -1,10 +1,11 @@
+const flash = require('express-flash');
 const { validationResult } = require('express-validator/check');
 
-exports.registerUser = (req, res, next) => {
+exports.postSignup = (req, res, next) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-        return res.status(422).json({message: "validation failed, entered"});
-    }
+    if(!errors.isEmpty()){
+        return res.status(422).json({message: "Something went wrong"});
+    } 
 
     const username = req.body.username;
     const fullname = req.body.fullname;

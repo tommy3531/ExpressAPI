@@ -1,14 +1,65 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const expressValidation = require('express-validator');
+const dotenv = require('dotenv');
+const MongoStore = require('connect-mongo')(session);
+const passport = require('passport');
+const flash = require('express-flash');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 const publicRoutes = require('./routes/public');
 
+/**
+ * Create express server
+ */
 const app = express();
 
+/**
+ * Load environment variable
+ */
+dotenv.config({ path: '.env'});
+
+/**
+ * Routes
+ */
+app.use('/auth', authRoutes);
+app.use('/feed', feedRoutes);
+app.use('/public', publicRoutes);
+/**
+ * Connect to MongoDB
+ */
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+mongoose.connect(process.env.MONGODB);
+mongoose.connection.on('error', (err) => {
+    console.error(err);
+    console.log("MongoDB connection error. Make sure Mongo is running");
+    process.exit();
+});
+
+/**
+ * Express Configuration
+ */
 app.use(bodyParser.json());
+app.use(expressValidation());
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    cookie: { maxAge: 1209600000 }, //two weeks in mill
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        authReconnect: true,
+    })
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,12 +69,10 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+    
     console.log(error);
     
 });
 
-app.use('/auth', authRoutes);
-app.use('/feed', feedRoutes);
-app.use('/public', publicRoutes);
-
 app.listen(8080);
+

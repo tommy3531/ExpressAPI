@@ -9,9 +9,7 @@ const passport = require('passport');
 const flash = require('express-flash');
 const cors = require('cors');
 
-const feedRoutes = require('./routes/feed');
 const userRoutes = require('./routes/user');
-const publicRoutes = require('./routes/public');
 
 /**
  * Create express server
@@ -22,7 +20,6 @@ const app = express();
  * Load environment variable
  */
 dotenv.config({ path: '.env'});
-
 
 /**
  * Connect to MongoDB
@@ -39,7 +36,7 @@ mongoose.connection.on('error', (err) => {
 
 /**
  * Express Configuration
- */
+ **/
 app.use(bodyParser.json());
 app.use(expressValidation());
 app.use(session({
@@ -57,7 +54,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(cors());
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS');
@@ -66,19 +62,14 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    
-    console.log("THis is and error: " + error);
+    console.log("This is and error: " + error);
     console.log("This is the res: " + res);
     console.log("This is the req: " +req);
-    
 });
 
 /**
  * Routes
  */
 app.use('/user', userRoutes);
-app.use('/feed', feedRoutes);
-app.use('/public', publicRoutes);
-
 app.listen(8080);
 

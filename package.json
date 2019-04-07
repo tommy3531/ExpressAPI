@@ -2,7 +2,7 @@
   "name": "resttutorial",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
@@ -17,14 +17,18 @@
     "connect-mongo": "^2.0.3",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
+    "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "express-ejs-layouts": "^2.5.0",
     "express-flash": "0.0.2",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.1",
+    "is-empty": "^1.2.0",
     "mongodb": "^3.2.2",
     "mongoose": "^5.4.20",
     "nodemon": "^1.18.10",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "validator": "^10.11.0"
   }
 }

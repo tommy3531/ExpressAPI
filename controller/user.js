@@ -1,24 +1,13 @@
 const bcrypt = require('bcryptjs');
 const User = require('../model/user');
+const jwt = require('jsonwebtoken');
 
 exports.postSignup = (req, res, next) => {
-    console.log("POSTSIGNUP: " + req.body.username)
-    console.log("PASSWORD: " + req.body.password);
-    console.log("EMAIL: " + req.body.email);
-
-    // const { errors, isValid} = validateRegisterInput(req.body);
-
-    // if(!isValid){
-    //     return res.status(400).json({"errors: ": errors});
-    // }
     User.findOne({ email: req.body.email }).then(user => {
         if(user){
             return res.status(400).json({email: "Email already exists"});
         } else {
             console.log("User: " + user);
-            const username = req.body.username;
-            const password = req.body.passwordOne;
-            const email = req.body.email;
 
             const newuser = new User();
             newuser.password = req.body.password;
@@ -45,9 +34,19 @@ exports.loginUser = (req, res, next) => {
         .then(user => {
             user.forEach(function(value){
                 console.log("ELEMENT: " + value.email);
+                // TODO: FIX THIS SHOULD use user.comparePassword
                 bcrypt.compare(req.body.password, value.password).then(isMatch => {
                     if(isMatch){
-                        console.log("MATCH");
+                        const token = jwt.sign({
+                            _id: user._id
+                        }, process.env.SESSION_SECRET)
+                        user.jwt = token;
+                        console.log("USER: " + user);
+
+                        res.cookie("growthDragonToken", token, {
+                            expire: new Date() + 999
+                        })
+                        return res.status(200).json({success: "MATCH", token});
                     } else {
                         console.log("NO MATCH");
                     }
